@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">Birdy</string>
+    <string name="enter_login">Enter login</string>
+    <string name="password">Enter password</string>
+    <string name="sign_in">Sign in</string>
+    <string name="sign_up">Sign up</string>
 </resources>

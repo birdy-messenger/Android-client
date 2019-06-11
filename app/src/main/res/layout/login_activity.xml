@@ -54,5 +54,6 @@
             android:textAllCaps="false"
             android:textColor="@color/background_color"
             android:textSize="24sp"
-            android:background="@drawable/rounded_button"/>
+            android:background="@drawable/rounded_button"
+            android:id="@+id/register_btn"/>
 </LinearLayout>
