@@ -23,7 +23,8 @@
                 android:layout_height="wrap_content"
                 android:hint="@string/enter_login"
                 android:focusable="true"
-                android:inputType="text"/>
+                android:inputType="text"
+                android:id="@+id/entered_login"/>
     </com.google.android.material.textfield.TextInputLayout>
     <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
@@ -35,7 +36,8 @@
                 android:layout_height="wrap_content"
                 android:hint="@string/password"
                 android:focusable="true"
-                android:inputType="textPassword"/>
+                android:inputType="textPassword"
+                android:id="@+id/entered_password"/>
     </com.google.android.material.textfield.TextInputLayout>
     <Button
             android:layout_width="match_parent"
@@ -45,7 +47,8 @@
             android:textColor="@color/background_color"
             android:textAllCaps="false"
             android:textSize="24sp"
-            android:background="@drawable/rounded_button"/>
+            android:background="@drawable/rounded_button"
+            android:id="@+id/login_btn"/>
     <Button
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
