@@ -1,4 +1,4 @@
-package com.birdyteam.birdyandroidversion
+package com.birdyteam.birdyandroidversion.model
 
 import android.content.Context
 import android.content.Intent
@@ -10,11 +10,12 @@ import android.util.Log
 import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
+import com.birdyteam.birdyandroidversion.view.LoadingFragment
+import com.birdyteam.birdyandroidversion.R
 import com.birdyteam.birdyandroidversion.requests.BirdyRequestUtils
 import org.json.JSONException
 import org.json.JSONObject
 import java.io.ByteArrayOutputStream
-import java.io.FileNotFoundException
 import java.io.IOException
 import java.io.InputStream
 import java.net.HttpURLConnection

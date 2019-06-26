@@ -1,4 +1,4 @@
-package com.birdyteam.birdyandroidversion
+package com.birdyteam.birdyandroidversion.model
 
 import android.content.Context
 import android.content.Intent
@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Button
 import android.widget.EditText
+import com.birdyteam.birdyandroidversion.R
 
 /*
  * @author: Ilia Ilmenskii

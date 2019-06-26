@@ -11,7 +11,7 @@
             android:supportsRtl="true"
             android:theme="@style/AppTheme" tools:ignore="GoogleAppIndexingWarning">
         <activity
-                android:name=".LoginActivity"
+                android:name=".model.LoginActivity"
                 android:noHistory="true"
                 android:screenOrientation="portrait">
             <intent-filter>
@@ -21,7 +21,7 @@
             </intent-filter>
         </activity>
         <activity
-                android:name=".RegisterActivity"
+                android:name=".model.RegisterActivity"
                 android:noHistory="true"
                 android:screenOrientation="portrait">
         </activity>
