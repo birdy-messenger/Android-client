@@ -13,6 +13,7 @@ import android.widget.Toast
 import androidx.core.content.edit
 import com.birdyteam.birdyandroidversion.view.LoadingFragment
 import com.birdyteam.birdyandroidversion.R
+import com.birdyteam.birdyandroidversion.model.user.UserFactory
 import com.birdyteam.birdyandroidversion.requests.AsyncTaskServerRequest
 import com.birdyteam.birdyandroidversion.requests.BirdyRequestUtils
 import com.birdyteam.birdyandroidversion.requests.RequestID
@@ -62,6 +63,7 @@ class LoginActivity : AppCompatActivity(), InterfaceAccessAsync {
         loginBtn = findViewById(R.id.login_btn)
         loginBtn.setOnClickListener {
             AsyncTaskServerRequest(
+                true,
                 this,
                 RequestID.AUTH,
                 arrayOf(loginEditText.text.toString(),
@@ -80,6 +82,7 @@ class LoginActivity : AppCompatActivity(), InterfaceAccessAsync {
         val id = pref.getInt(SAVED_ID, -1)
         val token = pref.getLong(SAVED_TOKEN, -1)
         if(id != -1 && token != -1L) {
+            UserFactory.createUser(token, id)
             makeToast("Logged :-)")
         }
     }
@@ -103,7 +106,7 @@ class LoginActivity : AppCompatActivity(), InterfaceAccessAsync {
                 val token = jsonBody.getLong("token")
                 Log.d(TAG,"Auth was successful with id=$id and token=$token")
                 savePreferences(id, token)
-                //TODO Create user from UserFactory class
+                UserFactory.createUser(token, id.toInt())
             } else {
                 Log.d(TAG, "Error occurred")
                 makeToast(jsonBody.getString("errorMessage"))

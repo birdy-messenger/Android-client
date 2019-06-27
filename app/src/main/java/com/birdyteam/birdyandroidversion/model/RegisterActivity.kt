@@ -52,6 +52,7 @@ class RegisterActivity : AppCompatActivity(), InterfaceAccessAsync {
         registerBtn.setOnClickListener {
             if(checkCorrectness()) {
                 AsyncTaskServerRequest(
+                    true,
                     this,
                     RequestID.USER_REG,
                     arrayOf(enterEmail.text.toString(),
