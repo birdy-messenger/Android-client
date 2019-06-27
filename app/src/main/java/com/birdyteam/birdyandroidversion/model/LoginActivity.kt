@@ -10,6 +10,7 @@ import android.util.Log
 import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
+import androidx.core.content.edit
 import com.birdyteam.birdyandroidversion.view.LoadingFragment
 import com.birdyteam.birdyandroidversion.R
 import com.birdyteam.birdyandroidversion.requests.BirdyRequestUtils
@@ -30,7 +31,10 @@ class LoginActivity : AppCompatActivity(), InterfaceAccessAsync {
 
     companion object {
         private const val TAG = "LoginActivity"
-        private const val LOADING_TAG = "loading.data.tag"
+        private const val SAVED_ID = "saved.id"
+        private const val SAVED_TOKEN = "saved.token"
+        const val LOADING_TAG = "loading.data.tag"
+
         fun getInstance(packageContext : Context) : Intent {
             return Intent(packageContext, LoginActivity::class.java)
         }
@@ -68,9 +72,29 @@ class LoginActivity : AppCompatActivity(), InterfaceAccessAsync {
 
         loginEditText = findViewById(R.id.entered_login)
         passwordEditText = findViewById(R.id.entered_password)
+
+        checkSharedPreferences()
     }
 
-    override fun accessLogin(access: String) {
+    private fun checkSharedPreferences() {
+        val pref = getPreferences(Context.MODE_PRIVATE)
+        val id = pref.getInt(SAVED_ID, -1)
+        val token = pref.getLong(SAVED_TOKEN, -1)
+        if(id != -1 && token != -1L) {
+            makeToast("Logged :-)")
+        }
+    }
+
+    private fun savePreferences(id: String, token: Long) {
+        val pref = getPreferences(Context.MODE_PRIVATE)
+        pref.edit {
+            putInt(SAVED_ID, id.toInt())
+            putLong(SAVED_TOKEN, token)
+            commit()
+        }
+    }
+
+    override fun registerAccess(access: String) {
         Log.d(TAG, access)
         try {
             val jsonBody = JSONObject(access)
@@ -79,6 +103,8 @@ class LoginActivity : AppCompatActivity(), InterfaceAccessAsync {
                 val id = jsonBody.getString("id")
                 val token = jsonBody.getLong("token")
                 Log.d(TAG,"Auth was successful with id=$id and token=$token")
+                savePreferences(id, token)
+                //TODO Create user from UserFactory class
             } else {
                 Log.d(TAG, "Error occurred")
                 makeToast(jsonBody.getString("errorMessage"))
@@ -106,7 +132,7 @@ class LoginActivity : AppCompatActivity(), InterfaceAccessAsync {
                 BirdyRequestUtils.HTTP +
                         BirdyRequestUtils.BIRDY +
                         BirdyRequestUtils.API +
-                        BirdyRequestUtils.BirdyRequestMethods.LOGIN
+                        BirdyRequestUtils.BirdyRequestMethods.AUTH
             )
                 .buildUpon()
                 .appendQueryParameter(
@@ -149,7 +175,7 @@ class LoginActivity : AppCompatActivity(), InterfaceAccessAsync {
             if(dialog.dialog.isShowing) {
                 dialog.dismissAllowingStateLoss()
             }
-            access?.accessLogin(result)
+            access?.registerAccess(result)
         }
     }
 }
