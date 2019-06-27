@@ -21,7 +21,7 @@ class AsyncTaskServerRequest(
 
     override fun onPreExecute() {
         super.onPreExecute()
-        val fm = (accessAsync as AppCompatActivity).supportFragmentManager
+        val fm = (accessAsync as? AppCompatActivity)?.supportFragmentManager
         if(showDialog)
             dialog = LoadingFragment()
         dialog?.show(fm, LoginActivity.LOADING_TAG)
