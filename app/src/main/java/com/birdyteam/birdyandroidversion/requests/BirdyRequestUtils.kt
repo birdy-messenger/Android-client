@@ -5,9 +5,9 @@ import java.net.URL
 
 class BirdyRequestUtils {
     companion object {
-        const val HTTP = "https://"
-        const val BIRDY = "birdytestapi.azurewebsites.net/"
-        const val API = "api/"
+        private const val HTTP = "https://"
+        private const val BIRDY = "birdytestapi.azurewebsites.net/"
+        private const val API = "api/"
 
         fun createRequest(id : RequestID, args : Array<String>?) : URL {
             return when (id) {
