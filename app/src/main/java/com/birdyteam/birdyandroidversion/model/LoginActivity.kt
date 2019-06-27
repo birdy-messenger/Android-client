@@ -13,7 +13,9 @@ import android.widget.Toast
 import androidx.core.content.edit
 import com.birdyteam.birdyandroidversion.view.LoadingFragment
 import com.birdyteam.birdyandroidversion.R
+import com.birdyteam.birdyandroidversion.requests.AsyncTaskServerRequest
 import com.birdyteam.birdyandroidversion.requests.BirdyRequestUtils
+import com.birdyteam.birdyandroidversion.requests.RequestID
 import org.json.JSONException
 import org.json.JSONObject
 import java.io.ByteArrayOutputStream
@@ -59,14 +61,11 @@ class LoginActivity : AppCompatActivity(), InterfaceAccessAsync {
 
         loginBtn = findViewById(R.id.login_btn)
         loginBtn.setOnClickListener {
-            val fm = supportFragmentManager
-            val dialog = LoadingFragment()
-            dialog.show(fm, LOADING_TAG)
-            ConnectToServer(
-                dialog,
+            AsyncTaskServerRequest(
                 this,
-                loginEditText.text.toString(),
-                passwordEditText.text.toString()
+                RequestID.AUTH,
+                arrayOf(loginEditText.text.toString(),
+                    passwordEditText.text.toString())
             ).execute()
         }
 
@@ -118,64 +117,5 @@ class LoginActivity : AppCompatActivity(), InterfaceAccessAsync {
 
     private fun makeToast(message: String) {
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
-    }
-
-    class ConnectToServer(private val dialog: LoadingFragment,
-                          private var access: InterfaceAccessAsync?,
-                          private val email : String,
-                          private val password : String)
-        : AsyncTask<Void, Void, String>() {
-
-
-        override fun doInBackground(vararg p0: Void?): String {
-            val builtUri = Uri.parse(
-                BirdyRequestUtils.HTTP +
-                        BirdyRequestUtils.BIRDY +
-                        BirdyRequestUtils.API +
-                        BirdyRequestUtils.BirdyRequestMethods.AUTH
-            )
-                .buildUpon()
-                .appendQueryParameter(
-                    BirdyRequestUtils.BirdyRequestMethods.BirdyRequestAuthParams.EMAIL, email
-                )
-                .appendQueryParameter(
-                    BirdyRequestUtils.BirdyRequestMethods.BirdyRequestAuthParams.PASSWORD, password
-                )
-                .build()
-            val url = URL(builtUri.toString())
-            val connection = url.openConnection() as HttpURLConnection
-            try {
-                val input : InputStream = if(connection.responseCode != HttpURLConnection.HTTP_OK)
-                    connection.errorStream
-                else
-                    connection.inputStream
-                val out = ByteArrayOutputStream()
-                var bytesRead : Int
-                val buffer = ByteArray(1024)
-                while(input.read(buffer).also {
-                        bytesRead = it
-                    }
-                    > 0)
-                {
-                    out.write(buffer, 0, bytesRead)
-                }
-                    out.close()
-                return out.toString()
-            } catch (e : Exception) {
-                Log.d(TAG, "$e")
-                return ""
-            }
-            finally {
-                connection.disconnect()
-            }
-        }
-
-        override fun onPostExecute(result: String) {
-            super.onPostExecute(result)
-            if(dialog.dialog.isShowing) {
-                dialog.dismissAllowingStateLoss()
-            }
-            access?.registerAccess(result)
-        }
     }
 }
