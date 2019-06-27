@@ -1,6 +1,7 @@
 package com.birdyteam.birdyandroidversion.requests
 
 import android.net.Uri
+import com.birdyteam.birdyandroidversion.hash.MD5Utils
 import java.net.URL
 
 class BirdyRequestUtils {
@@ -14,12 +15,15 @@ class BirdyRequestUtils {
                 RequestID.AUTH -> {
                     val buildUri = Uri.parse(
                         HTTP +
-                            BIRDY +
-                            API +
+                                BIRDY +
+                                API +
                             BirdyRequestMethods.AUTH
                     ).buildUpon()
                         .appendQueryParameter(BirdyRequestMethods.BirdyRequestParams.EMAIL, args!![0])
-                        .appendQueryParameter(BirdyRequestMethods.BirdyRequestParams.PASSWORD, args[1])
+                        .appendQueryParameter(
+                            BirdyRequestMethods.BirdyRequestParams.PASSWORD,
+                            MD5Utils.createMd5(args[1])
+                        )
                         .build()
                     URL(buildUri.toString())
                 }
@@ -31,7 +35,7 @@ class BirdyRequestUtils {
                                 BirdyRequestMethods.USER_REG
                     ).buildUpon()
                         .appendQueryParameter(BirdyRequestMethods.BirdyRequestParams.EMAIL, args!![0])
-                        .appendQueryParameter(BirdyRequestMethods.BirdyRequestParams.PASSWORD, args[1])
+                        .appendQueryParameter(BirdyRequestMethods.BirdyRequestParams.PASSWORD, MD5Utils.createMd5(args[1]))
                         .appendQueryParameter(BirdyRequestMethods.BirdyRequestParams.FIRST_NAME, args[2])
                         .build()
                     URL(buildUri.toString())
