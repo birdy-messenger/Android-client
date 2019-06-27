@@ -2,8 +2,7 @@ package com.birdyteam.birdyandroidversion.model
 
 import android.content.Context
 import android.content.Intent
-import android.net.Uri
-import android.os.AsyncTask
+import android.content.IntentFilter
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
@@ -11,29 +10,20 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
 import androidx.core.content.edit
-import com.birdyteam.birdyandroidversion.view.LoadingFragment
 import com.birdyteam.birdyandroidversion.R
+import com.birdyteam.birdyandroidversion.jsonparams.BirdyJSONUtils
 import com.birdyteam.birdyandroidversion.model.user.UserFactory
 import com.birdyteam.birdyandroidversion.requests.AsyncTaskServerRequest
-import com.birdyteam.birdyandroidversion.requests.BirdyRequestUtils
 import com.birdyteam.birdyandroidversion.requests.RequestID
-import org.json.JSONException
-import org.json.JSONObject
-import java.io.ByteArrayOutputStream
-import java.io.IOException
-import java.io.InputStream
-import java.net.HttpURLConnection
-import java.net.URL
-
 
 
 /*
  * @author: Ilia Ilmenskii
  */
-class LoginActivity : AppCompatActivity(), InterfaceAccessAsync {
+class LoginActivity : AppCompatActivity(), InterfaceAccessAsync, CancelBroadcastReceiver.OnCancelBroadcast {
 
     companion object {
-        private const val TAG = "LoginActivity"
+        const val TAG = "LoginActivity"
         private const val SAVED_ID = "saved.id"
         private const val SAVED_TOKEN = "saved.token"
         const val LOADING_TAG = "loading.data.tag"
@@ -43,6 +33,8 @@ class LoginActivity : AppCompatActivity(), InterfaceAccessAsync {
         }
     }
 
+    override var cancelReceiver: CancelBroadcastReceiver? = null
+    private var task : AsyncTaskServerRequest? = null
     private lateinit var registerBtn : Button
     private lateinit var loginBtn : Button
     private lateinit var loginEditText : EditText
@@ -75,6 +67,19 @@ class LoginActivity : AppCompatActivity(), InterfaceAccessAsync {
         passwordEditText = findViewById(R.id.entered_password)
 
         checkSharedPreferences()
+
+        cancelReceiver = CancelBroadcastReceiver(this)
+        registerReceiver(cancelReceiver, IntentFilter(InterfaceAccessAsync.CANCEL))
+    }
+
+    override fun onStop() {
+        super.onStop()
+        task?.cancel(true)
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        unregisterReceiver(cancelReceiver)
     }
 
     private fun checkSharedPreferences() {
@@ -87,10 +92,10 @@ class LoginActivity : AppCompatActivity(), InterfaceAccessAsync {
         }
     }
 
-    private fun savePreferences(id: String, token: Long) {
+    private fun savePreferences(id: Int, token: Long) {
         val pref = getPreferences(Context.MODE_PRIVATE)
         pref.edit {
-            putInt(SAVED_ID, id.toInt())
+            putInt(SAVED_ID, id)
             putLong(SAVED_TOKEN, token)
             commit()
         }
@@ -98,24 +103,17 @@ class LoginActivity : AppCompatActivity(), InterfaceAccessAsync {
 
     override fun registerAccess(access: String) {
         Log.d(TAG, access)
-        try {
-            val jsonBody = JSONObject(access)
-            val errorMsg = jsonBody.isNull("errorMessage")
-            if(errorMsg) {
-                val id = jsonBody.getString("id")
-                val token = jsonBody.getLong("token")
-                Log.d(TAG,"Auth was successful with id=$id and token=$token")
-                savePreferences(id, token)
-                UserFactory.createUser(token, id.toInt())
-            } else {
-                Log.d(TAG, "Error occurred")
-                makeToast(jsonBody.getString("errorMessage"))
-            }
-        } catch (ioe : IOException) {
-            Log.d(TAG, "Failed to fetch $ioe")
-        } catch (je : JSONException) {
-            Log.d(TAG, "Failed to parse JSON $je")
+        BirdyJSONUtils.createCurrentUser(access)
+        val currentUser = UserFactory.currentUser
+        if(currentUser != null) {
+            savePreferences(currentUser.userId, currentUser.accessToken)
+        } else {
+            makeToast(getString(R.string.failed_to_sing_in))
         }
+    }
+
+    override fun onCancel() {
+        task?.cancel(true)
     }
 
     private fun makeToast(message: String) {

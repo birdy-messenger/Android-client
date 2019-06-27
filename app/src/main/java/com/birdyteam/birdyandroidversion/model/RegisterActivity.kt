@@ -2,8 +2,7 @@ package com.birdyteam.birdyandroidversion.model
 
 import android.content.Context
 import android.content.Intent
-import android.net.Uri
-import android.os.AsyncTask
+import android.content.IntentFilter
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
@@ -12,18 +11,12 @@ import android.widget.EditText
 import android.widget.Toast
 import com.birdyteam.birdyandroidversion.R
 import com.birdyteam.birdyandroidversion.requests.AsyncTaskServerRequest
-import com.birdyteam.birdyandroidversion.requests.BirdyRequestUtils
 import com.birdyteam.birdyandroidversion.requests.RequestID
-import com.birdyteam.birdyandroidversion.view.LoadingFragment
-import java.io.ByteArrayOutputStream
-import java.io.InputStream
-import java.net.HttpURLConnection
-import java.net.URL
 
 /*
  * @author: Ilia Ilmenskii
  */
-class RegisterActivity : AppCompatActivity(), InterfaceAccessAsync {
+class RegisterActivity : AppCompatActivity(), InterfaceAccessAsync, CancelBroadcastReceiver.OnCancelBroadcast {
 
     companion object {
         private const val TAG = "RegisterActivity"
@@ -32,6 +25,8 @@ class RegisterActivity : AppCompatActivity(), InterfaceAccessAsync {
         }
     }
 
+    override var cancelReceiver: CancelBroadcastReceiver? = null
+    private var task : AsyncTaskServerRequest? = null
     private lateinit var registerBtn : Button
     private lateinit var enterName : EditText
     private lateinit var enterEmail : EditText
@@ -51,16 +46,29 @@ class RegisterActivity : AppCompatActivity(), InterfaceAccessAsync {
         registerBtn = findViewById(R.id.register_btn)
         registerBtn.setOnClickListener {
             if(checkCorrectness()) {
-                AsyncTaskServerRequest(
+                task = AsyncTaskServerRequest(
                     true,
                     this,
                     RequestID.USER_REG,
                     arrayOf(enterEmail.text.toString(),
                         enterPassword.text.toString(),
                         enterName.text.toString())
-                ).execute()
+                ).apply { execute() }
             }
         }
+
+        cancelReceiver = CancelBroadcastReceiver(this)
+        registerReceiver(cancelReceiver, IntentFilter(InterfaceAccessAsync.CANCEL))
+    }
+
+    override fun onStop() {
+        super.onStop()
+        task?.cancel(true)
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        unregisterReceiver(cancelReceiver)
     }
 
     private fun checkCorrectness() : Boolean {
@@ -97,5 +105,9 @@ class RegisterActivity : AppCompatActivity(), InterfaceAccessAsync {
 
     override fun registerAccess(access: String) {
         Log.d(TAG, access)
+    }
+
+    override fun onCancel() {
+        task?.cancel(true)
     }
 }
