@@ -8,12 +8,14 @@ class BirdyRequestUtils {
     }
     class BirdyRequestMethods {
         companion object {
-            const val LOGIN = "login?"
+            const val AUTH = "auth?"
+            const val USER_REG = "user.reg?"
         }
         class BirdyRequestAuthParams {
             companion object {
                 const val EMAIL = "email"
                 const val PASSWORD = "passwordHash"
+                const val FIRST_NAME = "firstName"
             }
         }
     }
