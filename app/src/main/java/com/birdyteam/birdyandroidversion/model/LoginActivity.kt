@@ -11,7 +11,7 @@ import android.widget.EditText
 import android.widget.Toast
 import androidx.core.content.edit
 import com.birdyteam.birdyandroidversion.R
-import com.birdyteam.birdyandroidversion.jsonparams.BirdyJSONUtils
+import com.birdyteam.birdyandroidversion.jsonutils.BirdyJSONUtils
 import com.birdyteam.birdyandroidversion.model.user.UserFactory
 import com.birdyteam.birdyandroidversion.requests.AsyncTaskServerRequest
 import com.birdyteam.birdyandroidversion.requests.RequestID

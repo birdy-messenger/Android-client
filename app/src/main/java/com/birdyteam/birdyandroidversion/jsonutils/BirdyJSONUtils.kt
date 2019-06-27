@@ -1,4 +1,4 @@
-package com.birdyteam.birdyandroidversion.jsonparams
+package com.birdyteam.birdyandroidversion.jsonutils
 
 import android.util.Log
 import com.birdyteam.birdyandroidversion.model.LoginActivity
