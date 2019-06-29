@@ -3,61 +3,35 @@ package com.birdyteam.birdyandroidversion.model.authorized
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.view.View
-import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.edit
 import com.birdyteam.birdyandroidversion.R
 import com.birdyteam.birdyandroidversion.model.LoginActivity
 import com.birdyteam.birdyandroidversion.model.user.UserFactory
 
-class AuthorizedActivity : AppCompatActivity(), View.OnClickListener {
+class AuthorizedActivity : AppCompatActivity() {
     companion object {
+        const val TAG = "AuthorizedActivity"
         const val AUTHORIZED = "com.birdyteam.birdyandroidversion.model.authorized.authorized_intent"
         fun getInstance(context: Context) : Intent {
             return Intent(context, AuthorizedActivity::class.java)
         }
     }
 
-    private lateinit var allUsersBtn : ImageView
-    private lateinit var sendMessageBtn : ImageView
-    private lateinit var userProfileBtn : ImageView
-    private lateinit var settingsBtn : ImageView
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_authorized)
         supportActionBar?.hide()
 
-        allUsersBtn = findViewById(R.id.AllUsers)
-        allUsersBtn.setOnClickListener(this)
-        sendMessageBtn = findViewById(R.id.SendMessage)
-        sendMessageBtn.setOnClickListener(this)
-        userProfileBtn = findViewById(R.id.UserProfile)
-        userProfileBtn.setOnClickListener(this)
-        settingsBtn = findViewById(R.id.Settings)
-        settingsBtn.setOnClickListener(this)
+        setMenu()
     }
 
-    override fun onClick(p0: View?) {
-
-        val fm = supportFragmentManager
-
-        when (p0?.id) {
-            R.id.AllUsers -> {
-
-            }
-            R.id.SendMessage -> {
-
-            }
-            R.id.UserProfile -> {
-
-            }
-            R.id.Settings -> {
-                fm.beginTransaction()
-                    .replace(R.id.FragmentContainer, SettingsFragment())
-                    .commit()
-            }
+    private fun setMenu() {
+        val fragment = supportFragmentManager.findFragmentById(R.id.MenuContainer)
+        if(fragment == null) {
+            supportFragmentManager.beginTransaction()
+                .add(R.id.MenuContainer, MenuFragment())
+                .commit()
         }
     }
 
@@ -72,7 +46,22 @@ class AuthorizedActivity : AppCompatActivity(), View.OnClickListener {
     private fun cleanSharedPreferences() {
         getSharedPreferences(LoginActivity.LOGIN_ACTIVITY,Context.MODE_PRIVATE).edit {
             clear()
-            commit()
+            apply()
+        }
+    }
+
+    fun menuClicked(id: Int?) {
+        when (id) {
+            R.id.Settings -> {
+                supportFragmentManager.beginTransaction()
+                    .replace(R.id.FragmentContainer, SettingsFragment())
+                    .commit()
+            }
+            R.id.UserProfile -> {
+                supportFragmentManager.beginTransaction()
+                    .replace(R.id.FragmentContainer, ProfileFragment())
+                    .commit()
+            }
         }
     }
 }
