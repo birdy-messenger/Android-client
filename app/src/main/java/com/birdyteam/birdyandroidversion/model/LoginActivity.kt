@@ -15,7 +15,9 @@ import com.birdyteam.birdyandroidversion.jsonutils.BirdyJSONUtils
 import com.birdyteam.birdyandroidversion.model.authorized.AuthorizedActivity
 import com.birdyteam.birdyandroidversion.model.user.UserFactory
 import com.birdyteam.birdyandroidversion.requests.AsyncTaskServerRequest
+import com.birdyteam.birdyandroidversion.requests.BirdyRequestUtils
 import com.birdyteam.birdyandroidversion.requests.RequestID
+import java.io.ByteArrayOutputStream
 
 
 /*
@@ -28,6 +30,7 @@ class LoginActivity : AppCompatActivity(), InterfaceAccessAsync, CancelBroadcast
         const val TAG = "LoginActivity"
         const val SAVED_ID = "saved.id"
         const val SAVED_TOKEN = "saved.token"
+        const val SAVED_NAME = "saved.name"
         const val INVALID_ID = -1
         const val INVALID_TOKEN = -1L
         const val LOADING_TAG = "loading.data.tag"
@@ -90,21 +93,35 @@ class LoginActivity : AppCompatActivity(), InterfaceAccessAsync, CancelBroadcast
         val pref = getSharedPreferences(LOGIN_ACTIVITY,Context.MODE_PRIVATE)
         val id = pref.getInt(SAVED_ID, INVALID_ID)
         val token = pref.getLong(SAVED_TOKEN, INVALID_TOKEN)
+        val name = pref.getString(SAVED_NAME, null)
         if(id != INVALID_ID && token != INVALID_TOKEN) {
             Log.d(TAG, "Successfully logged by SharedPreferences")
             UserFactory.createUser(token, id)
+            UserFactory.currentUser?.name = name
             singIn()
         }
     }
 
     private fun singIn() {
+        Thread(Runnable {
+            val user = UserFactory.currentUser
+            val url = BirdyRequestUtils.createRequest(RequestID.GET_USER_INFO, arrayOf(user!!.userId.toString(), user.accessToken.toString()))
+            val out : ByteArrayOutputStream? = BirdyRequestUtils.response(url)
+            out?.use {
+                BirdyJSONUtils.setUserName(it.toString())
+                getSharedPreferences(LOGIN_ACTIVITY, Context.MODE_PRIVATE).edit {
+                    putString(SAVED_NAME, UserFactory.currentUser?.name)
+                    apply()
+                }
+            }
+        }).start()
         startActivity(
             AuthorizedActivity.getInstance(this)
         )
     }
 
     private fun savePreferences(id: Int, token: Long) {
-        val pref = getPreferences(Context.MODE_PRIVATE)
+        val pref = getSharedPreferences(LOGIN_ACTIVITY,Context.MODE_PRIVATE)
         pref.edit {
             putInt(SAVED_ID, id)
             putLong(SAVED_TOKEN, token)
