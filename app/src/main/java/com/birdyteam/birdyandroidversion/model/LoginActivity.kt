@@ -12,9 +12,12 @@ import android.widget.Toast
 import androidx.core.content.edit
 import com.birdyteam.birdyandroidversion.R
 import com.birdyteam.birdyandroidversion.jsonutils.BirdyJSONUtils
+import com.birdyteam.birdyandroidversion.model.authorized.AuthorizedActivity
 import com.birdyteam.birdyandroidversion.model.user.UserFactory
 import com.birdyteam.birdyandroidversion.requests.AsyncTaskServerRequest
+import com.birdyteam.birdyandroidversion.requests.BirdyRequestUtils
 import com.birdyteam.birdyandroidversion.requests.RequestID
+import java.io.ByteArrayOutputStream
 
 
 /*
@@ -23,9 +26,13 @@ import com.birdyteam.birdyandroidversion.requests.RequestID
 class LoginActivity : AppCompatActivity(), InterfaceAccessAsync, CancelBroadcastReceiver.OnCancelBroadcast {
 
     companion object {
+        const val LOGIN_ACTIVITY = "com.birdyteam.birdyandroidversion.model.login_activity"
         const val TAG = "LoginActivity"
-        private const val SAVED_ID = "saved.id"
-        private const val SAVED_TOKEN = "saved.token"
+        const val SAVED_ID = "saved.id"
+        const val SAVED_TOKEN = "saved.token"
+        const val SAVED_NAME = "saved.name"
+        const val INVALID_ID = -1
+        const val INVALID_TOKEN = -1L
         const val LOADING_TAG = "loading.data.tag"
 
         fun getInstance(packageContext : Context) : Intent {
@@ -83,17 +90,38 @@ class LoginActivity : AppCompatActivity(), InterfaceAccessAsync, CancelBroadcast
     }
 
     private fun checkSharedPreferences() {
-        val pref = getPreferences(Context.MODE_PRIVATE)
-        val id = pref.getInt(SAVED_ID, -1)
-        val token = pref.getLong(SAVED_TOKEN, -1)
-        if(id != -1 && token != -1L) {
+        val pref = getSharedPreferences(LOGIN_ACTIVITY,Context.MODE_PRIVATE)
+        val id = pref.getInt(SAVED_ID, INVALID_ID)
+        val token = pref.getLong(SAVED_TOKEN, INVALID_TOKEN)
+        val name = pref.getString(SAVED_NAME, null)
+        if(id != INVALID_ID && token != INVALID_TOKEN) {
+            Log.d(TAG, "Successfully logged by SharedPreferences")
             UserFactory.createUser(token, id)
-            makeToast("Logged :-)")
+            UserFactory.currentUser?.name = name
+            singIn()
         }
     }
 
+    private fun singIn() {
+        Thread(Runnable {
+            val user = UserFactory.currentUser
+            val url = BirdyRequestUtils.createRequest(RequestID.GET_USER_INFO, arrayOf(user!!.userId.toString(), user.accessToken.toString()))
+            val out : ByteArrayOutputStream? = BirdyRequestUtils.response(url)
+            out?.use {
+                BirdyJSONUtils.setUserName(it.toString())
+                getSharedPreferences(LOGIN_ACTIVITY, Context.MODE_PRIVATE).edit {
+                    putString(SAVED_NAME, UserFactory.currentUser?.name)
+                    apply()
+                }
+            }
+        }).start()
+        startActivity(
+            AuthorizedActivity.getInstance(this)
+        )
+    }
+
     private fun savePreferences(id: Int, token: Long) {
-        val pref = getPreferences(Context.MODE_PRIVATE)
+        val pref = getSharedPreferences(LOGIN_ACTIVITY,Context.MODE_PRIVATE)
         pref.edit {
             putInt(SAVED_ID, id)
             putLong(SAVED_TOKEN, token)
@@ -107,6 +135,7 @@ class LoginActivity : AppCompatActivity(), InterfaceAccessAsync, CancelBroadcast
         val currentUser = UserFactory.currentUser
         if(currentUser != null) {
             savePreferences(currentUser.userId, currentUser.accessToken)
+            singIn()
         } else {
             makeToast(getString(R.string.failed_to_sing_in))
         }

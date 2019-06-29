@@ -10,4 +10,6 @@
     <string name="register">Register</string>
     <string name="connecting_server">Connecting\.\.\.</string>
     <string name="failed_to_sing_in">"Invalid password or email"</string>
+    <string name="logout">Logout</string>
+    <string name="undefined">Undefined</string>
 </resources>

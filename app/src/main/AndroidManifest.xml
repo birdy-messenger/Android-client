@@ -25,6 +25,10 @@
                 android:noHistory="true"
                 android:screenOrientation="portrait">
         </activity>
+        <activity
+                android:name=".model.authorized.AuthorizedActivity"
+                android:screenOrientation="portrait">
+        </activity>
     </application>
 
 </manifest>
