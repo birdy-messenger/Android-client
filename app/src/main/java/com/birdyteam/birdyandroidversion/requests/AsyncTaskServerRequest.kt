@@ -29,25 +29,11 @@ class AsyncTaskServerRequest(
 
     override fun doInBackground(vararg p0: Void?): String {
         val url = BirdyRequestUtils.createRequest(requestId, requestArgs)
-        val connection = url.openConnection() as HttpURLConnection
-        try {
-            val input : InputStream = if(connection.responseCode != HttpURLConnection.HTTP_OK)
-                connection.errorStream
-            else
-                connection.inputStream
-            val out = ByteArrayOutputStream()
-            var bytesRead : Int
-            val buffer = ByteArray(1024)
-            while(input.read(buffer).also { bytesRead = it } > 0) {
-                out.write(buffer, 0, bytesRead)
-            }
-            out.close()
-            return out.toString()
-        } catch (e : Exception) {
+        val out = BirdyRequestUtils.response(url)
+        out.use {
+            if(it != null)
+                return out.toString()
             return ""
-        }
-        finally {
-            connection.disconnect()
         }
     }
 
