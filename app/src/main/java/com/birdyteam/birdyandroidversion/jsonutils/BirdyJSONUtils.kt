@@ -29,10 +29,21 @@ class BirdyJSONUtils {
             }
         }
 
+        fun setUserName(json : String) {
+            try {
+                val jsonBody = JSONObject(json)
+                UserFactory.currentUser?.name = jsonBody.getString(BirdyJSONKeys.NAME)
+            } catch (ioe : IOException) {
+            } catch (je : JSONException) {
+            }
+
+        }
+
         class BirdyJSONKeys {
             companion object {
                 const val ID = "Id"
                 const val TOKEN = "Token"
+                const val NAME = "FirstName"
             }
         }
     }
