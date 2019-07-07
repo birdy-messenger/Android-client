@@ -1,15 +1,20 @@
 package com.birdyteam.birdyandroidversion.activity
 
+import android.content.Context
+import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
 import com.arellomobile.mvp.MvpAppCompatActivity
 import com.arellomobile.mvp.presenter.InjectPresenter
+import com.arellomobile.mvp.presenter.ProvidePresenter
 import com.birdyteam.birdyandroidversion.App
 import com.birdyteam.birdyandroidversion.R
 import com.birdyteam.birdyandroidversion.fragment.LoadingFragment
 import com.birdyteam.birdyandroidversion.presenter.LoginPresenter
+import com.birdyteam.birdyandroidversion.user.CurrentUser
 import com.birdyteam.birdyandroidversion.view.LoginView
 import javax.inject.Inject
 
@@ -21,13 +26,22 @@ class LoginActivity : MvpAppCompatActivity(), LoginView {
 
     companion object {
         private const val DIALOG_TAG = "loading.fragment.tag"
+
+        fun getInstance(packageContext: Context) = Intent(packageContext, LoginActivity::class.java)
     }
+
+    private val tag = LoginActivity::class.java.simpleName
 
     @Inject
     lateinit var dialogFragment : LoadingFragment
 
     @InjectPresenter
     lateinit var loginPresenter: LoginPresenter
+
+    @ProvidePresenter
+    fun providePresenter() : LoginPresenter = LoginPresenter(getSharedPreferences(
+        CurrentUser.USER, Context.MODE_PRIVATE
+    ))
 
     private var loginBtn : Button? = null
     private var registerBtn : Button? = null
@@ -79,6 +93,10 @@ class LoginActivity : MvpAppCompatActivity(), LoginView {
     }
 
     override fun signIn() {
+        Log.d(tag, "Successfully logged in!")
+    }
+
+    override fun signUp() {
 
     }
 }
