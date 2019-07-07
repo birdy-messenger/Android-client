@@ -8,6 +8,7 @@ import com.arellomobile.mvp.viewstate.strategy.*
  * @author Ilia Ilmenskii created on 07.07.2019
  */
 
+@StateStrategyType (value = OneExecutionStateStrategy::class)
 interface LoginView : MvpView {
 
     companion object {
@@ -20,8 +21,9 @@ interface LoginView : MvpView {
     @StateStrategyType (value = AddToEndSingleTagStrategy::class, tag = LOAD_STATE)
     fun hideLoad()
 
-    @StateStrategyType (value = OneExecutionStateStrategy::class)
     fun showError(message : String)
 
     fun signIn()
+
+    fun signUp()
 }
