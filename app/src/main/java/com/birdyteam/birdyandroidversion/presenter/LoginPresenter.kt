@@ -1,11 +1,14 @@
 package com.birdyteam.birdyandroidversion.presenter
 
+import android.content.SharedPreferences
 import android.util.Log
+import androidx.core.content.edit
 import com.arellomobile.mvp.InjectViewState
 import com.arellomobile.mvp.MvpPresenter
 import com.birdyteam.birdyandroidversion.App
 import com.birdyteam.birdyandroidversion.md5.createMD5
 import com.birdyteam.birdyandroidversion.network.api.AppRequests
+import com.birdyteam.birdyandroidversion.user.CurrentUser
 import com.birdyteam.birdyandroidversion.view.LoginView
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
@@ -17,7 +20,7 @@ import javax.inject.Inject
  * @author Ilia Ilmenskii created on 07.07.2019
  */
 @InjectViewState
-class LoginPresenter : MvpPresenter<LoginView>() {
+class LoginPresenter(private val preferences: SharedPreferences) : MvpPresenter<LoginView>() {
 
     companion object {
         private var TOO_LONG_PASSWORD = "Password is too long!"
@@ -36,6 +39,22 @@ class LoginPresenter : MvpPresenter<LoginView>() {
 
     init {
         App.appComponent.inject(this@LoginPresenter)
+        if(hasSharedPreferences()) {
+            Log.d(tag, "Has shared preferences!")
+            viewState.signIn()
+        } else {
+            Log.d(tag, "Doesn't have preferences")
+        }
+    }
+
+    private fun hasSharedPreferences(): Boolean {
+        val id = preferences.getInt(CurrentUser.SAVE_ID, -1)
+        val token = preferences.getLong(CurrentUser.SAVE_TOKEN, -1L)
+        if(id == -1 || token == -1L)
+            return false
+        CurrentUser.id = id
+        CurrentUser.token = token
+        return true
     }
 
     fun signInClicked(email : String, password : String) {
@@ -45,19 +64,28 @@ class LoginPresenter : MvpPresenter<LoginView>() {
         Log.d(tag, "Checking correctness")
         if(checkCorrectness(email, password)) {
             viewState?.showLoad()
-            authRequest = appRequests.auth(email,password.createMD5())
+            authRequest = appRequests.auth(email, password.createMD5())
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe ({
-                    //TODO: Implement this
-                    Thread.sleep(5000)
+                    CurrentUser.id = it.id
+                    CurrentUser.token = it.token
+                    savePreferences()
                     Log.d(tag, "Received id : ${it.id} and token : ${it.token}")
                     viewState.hideLoad()
+                    viewState.signIn()
                 }, {
                     Log.d(tag, "Error occurred : $it")
                     viewState.hideLoad()
                 })
         }
+    }
+
+    private fun savePreferences() = preferences.edit {
+        clear()
+        this.putInt(CurrentUser.SAVE_ID, CurrentUser.id)
+        this.putLong(CurrentUser.SAVE_TOKEN, CurrentUser.token)
+        apply()
     }
 
     fun signUpClicked() {
