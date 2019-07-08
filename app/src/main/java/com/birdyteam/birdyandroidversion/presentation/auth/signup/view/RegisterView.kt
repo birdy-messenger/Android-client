@@ -1,4 +1,4 @@
-package com.birdyteam.birdyandroidversion.view
+package com.birdyteam.birdyandroidversion.presentation.auth.signup.view
 
 import com.arellomobile.mvp.MvpView
 

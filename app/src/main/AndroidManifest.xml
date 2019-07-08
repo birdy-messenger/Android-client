@@ -12,7 +12,7 @@
             android:supportsRtl="true"
             android:theme="@style/AppTheme" tools:ignore="GoogleAppIndexingWarning">
         <activity
-                android:name=".activity.LoginActivity"
+                android:name="com.birdyteam.birdyandroidversion.presentation.auth.signin.ui.LoginActivity"
                 android:noHistory="true"
                 android:screenOrientation="portrait">
             <intent-filter>
@@ -22,7 +22,7 @@
             </intent-filter>
         </activity>
         <activity
-                android:name=".activity.RegisterActivity"
+                android:name="com.birdyteam.birdyandroidversion.presentation.auth.signup.ui.RegisterActivity"
                 android:noHistory="true"
                 android:screenOrientation="portrait">
         </activity>

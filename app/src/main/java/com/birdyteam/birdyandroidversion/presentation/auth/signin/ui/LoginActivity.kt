@@ -1,4 +1,4 @@
-package com.birdyteam.birdyandroidversion.activity
+package com.birdyteam.birdyandroidversion.presentation.auth.signin.ui
 
 import android.content.Context
 import android.content.Intent
@@ -12,16 +12,17 @@ import com.arellomobile.mvp.presenter.InjectPresenter
 import com.arellomobile.mvp.presenter.ProvidePresenter
 import com.birdyteam.birdyandroidversion.App
 import com.birdyteam.birdyandroidversion.R
-import com.birdyteam.birdyandroidversion.fragment.LoadingFragment
-import com.birdyteam.birdyandroidversion.presenter.LoginPresenter
+import com.birdyteam.birdyandroidversion.presentation.common.LoadingFragment
+import com.birdyteam.birdyandroidversion.presentation.auth.ui.presenter.LoginPresenter
 import com.birdyteam.birdyandroidversion.user.CurrentUser
-import com.birdyteam.birdyandroidversion.view.LoginView
+import com.birdyteam.birdyandroidversion.presentation.auth.signin.view.LoginView
 
 /**
  * @project Android-client
  * @author Ilia Ilmenskii created on 07.07.2019
  */
-class LoginActivity : MvpAppCompatActivity(), LoginView {
+class LoginActivity : MvpAppCompatActivity(),
+    LoginView {
 
     companion object {
         private const val DIALOG_TAG = "loading.fragment.tag"
@@ -88,7 +89,9 @@ class LoginActivity : MvpAppCompatActivity(), LoginView {
     }
 
     override fun showLoad() {
-        dialogFragment.show(supportFragmentManager, DIALOG_TAG)
+        dialogFragment.show(supportFragmentManager,
+            DIALOG_TAG
+        )
     }
 
     override fun signIn() {

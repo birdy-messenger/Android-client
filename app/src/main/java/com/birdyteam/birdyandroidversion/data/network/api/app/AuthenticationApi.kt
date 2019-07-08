@@ -1,7 +1,7 @@
-package com.birdyteam.birdyandroidversion.network.api
+package com.birdyteam.birdyandroidversion.data.network.api.app
 
-import com.birdyteam.birdyandroidversion.network.response.AuthResponse
-import com.birdyteam.birdyandroidversion.network.response.RegResponse
+import com.birdyteam.birdyandroidversion.data.network.api.app.response.AuthResponse
+import com.birdyteam.birdyandroidversion.data.network.api.app.response.RegResponse
 import io.reactivex.Single
 import retrofit2.http.GET
 import retrofit2.http.POST
@@ -12,7 +12,7 @@ import retrofit2.http.Query
  * @author Ilia Ilmenskii created on 08.07.2019
  */
 
-interface AppRequests {
+interface AuthenticationApi {
     @GET("/api/app/auth")
     fun auth(
         @Query("email") email: String,
