@@ -23,7 +23,7 @@ object NetworkModule {
     @JvmStatic
     @Provides
     @Singleton
-    fun provideRetrofit(gson: Gson) : Retrofit = Retrofit.Builder()
+    fun provideRetrofit(gson: Gson): Retrofit = Retrofit.Builder()
         .baseUrl(BASE_URL)
         .addConverterFactory(GsonConverterFactory.create(gson))
         .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
@@ -31,11 +31,11 @@ object NetworkModule {
 
     @JvmStatic
     @Provides
-    fun provideGson() : Gson = GsonBuilder().create()
+    fun provideGson(): Gson = GsonBuilder().create()
 
     @JvmStatic
     @Provides
     @Singleton
-    fun provideAppRequests(retrofit: Retrofit) : AppRequests = retrofit.create(AppRequests::class.java)
+    fun provideAppRequests(retrofit: Retrofit): AppRequests = retrofit.create(AppRequests::class.java)
 
 }
