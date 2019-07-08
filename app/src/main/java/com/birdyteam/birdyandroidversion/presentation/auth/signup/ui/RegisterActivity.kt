@@ -6,7 +6,7 @@ import android.os.Bundle
 import com.arellomobile.mvp.MvpAppCompatActivity
 import com.arellomobile.mvp.presenter.InjectPresenter
 import com.birdyteam.birdyandroidversion.R
-import com.birdyteam.birdyandroidversion.presentation.auth.ui.presenter.RegisterPresenter
+import com.birdyteam.birdyandroidversion.presentation.auth.signup.presenter.RegisterPresenter
 import com.birdyteam.birdyandroidversion.presentation.auth.signup.view.RegisterView
 
 /**
