@@ -13,16 +13,16 @@ import retrofit2.http.Query
  */
 
 interface AppRequests {
-    @GET ("/api/app/auth")
+    @GET("/api/app/auth")
     fun auth(
-        @Query ("email") email : String,
-        @Query ("passwordHash") password : String
-    ) : Single<AuthResponse>
+        @Query("email") email: String,
+        @Query("passwordHash") password: String
+    ): Single<AuthResponse>
 
-    @POST ("/api/app/reg")
+    @POST("/api/app/reg")
     fun reg(
-        @Query ("email") email: String,
-        @Query ("passwordHash") password: String,
-        @Query ("firstName") name : String
-    ) : Single<RegResponse>
+        @Query("email") email: String,
+        @Query("passwordHash") password: String,
+        @Query("firstName") name: String
+    ): Single<RegResponse>
 }

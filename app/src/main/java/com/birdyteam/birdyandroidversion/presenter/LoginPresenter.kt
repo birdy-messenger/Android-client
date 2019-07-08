@@ -35,11 +35,11 @@ class LoginPresenter(private val preferences: SharedPreferences) : MvpPresenter<
     lateinit var appRequests: AppRequests
 
     private val tag = LoginPresenter::class.java.simpleName
-    private var authRequest : Disposable? = null
+    private var authRequest: Disposable? = null
 
     init {
         App.appComponent.inject(this@LoginPresenter)
-        if(hasSharedPreferences()) {
+        if (hasSharedPreferences()) {
             Log.d(tag, "Has shared preferences!")
             viewState.signIn()
         } else {
@@ -50,24 +50,24 @@ class LoginPresenter(private val preferences: SharedPreferences) : MvpPresenter<
     private fun hasSharedPreferences(): Boolean {
         val id = preferences.getInt(CurrentUser.SAVE_ID, -1)
         val token = preferences.getLong(CurrentUser.SAVE_TOKEN, -1L)
-        if(id == -1 || token == -1L)
+        if (id == -1 || token == -1L)
             return false
         CurrentUser.id = id
         CurrentUser.token = token
         return true
     }
 
-    fun signInClicked(email : String, password : String) {
+    fun signInClicked(email: String, password: String) {
         Log.d(tag, "Sign in Clicked with email : $email and password : $password")
-        if(authRequest?.isDisposed == false)
+        if (authRequest?.isDisposed == false)
             return
         Log.d(tag, "Checking correctness")
-        if(checkCorrectness(email, password)) {
+        if (checkCorrectness(email, password)) {
             viewState?.showLoad()
             authRequest = appRequests.auth(email, password.createMD5())
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe ({
+                .subscribe({
                     CurrentUser.id = it.id
                     CurrentUser.token = it.token
                     savePreferences()
@@ -92,27 +92,27 @@ class LoginPresenter(private val preferences: SharedPreferences) : MvpPresenter<
 
     }
 
-    fun checkCorrectness(email : String, password: String) : Boolean =
+    fun checkCorrectness(email: String, password: String): Boolean =
         (checkEmail(email) && checkPassword(password))
 
     private fun checkEmail(email: String): Boolean {
-        if(!email.matches(Regex(EMAIL_PATTERN))) {
+        if (!email.matches(Regex(EMAIL_PATTERN))) {
             viewState.showError(EMAIL_NOT_MATCH)
             return false
         }
         return true
     }
 
-    private fun checkPassword(password: String) : Boolean {
-        if(password.length < 6) {
+    private fun checkPassword(password: String): Boolean {
+        if (password.length < 6) {
             viewState.showError(TOO_SHORT_PASSWORD)
             return false
         }
-        if(password.length > 32) {
+        if (password.length > 32) {
             viewState.showError(TOO_LONG_PASSWORD)
             return false
         }
-        if(!password.matches(Regex(PASSWORD_PATTERN))) {
+        if (!password.matches(Regex(PASSWORD_PATTERN))) {
             viewState.showError(PASSWORD_NOT_MATCH)
             return false
         }

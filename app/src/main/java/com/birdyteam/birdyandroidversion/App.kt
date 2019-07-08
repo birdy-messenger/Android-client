@@ -11,12 +11,7 @@ import java.lang.IllegalStateException
  */
 class App : Application() {
     companion object {
-        private var mAppComponent : AppComponent? = null
-        val appComponent : AppComponent
-        get() {
-            mAppComponent ?: throw IllegalStateException("AppComponent hasn't been initialized yet")
-            return mAppComponent!!
-        }
+        lateinit var appComponent: AppComponent
     }
 
     override fun onCreate() {
@@ -25,7 +20,7 @@ class App : Application() {
     }
 
     private fun initializeDagger() {
-        mAppComponent = DaggerAppComponent.builder()
+        appComponent = DaggerAppComponent.builder()
             .build()
     }
 

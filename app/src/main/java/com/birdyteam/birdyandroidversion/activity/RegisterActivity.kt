@@ -19,7 +19,7 @@ class RegisterActivity : MvpAppCompatActivity(), RegisterView {
     }
 
     @InjectPresenter
-    lateinit var registerPresenter : RegisterPresenter
+    lateinit var registerPresenter: RegisterPresenter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
