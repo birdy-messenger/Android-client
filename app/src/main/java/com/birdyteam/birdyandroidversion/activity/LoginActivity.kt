@@ -26,7 +26,7 @@ class LoginActivity : MvpAppCompatActivity(), LoginView {
     companion object {
         private const val DIALOG_TAG = "loading.fragment.tag"
 
-        @Suppress ("unused")
+        @Suppress("unused")
         fun getInstance(packageContext: Context) = Intent(packageContext, LoginActivity::class.java)
     }
 

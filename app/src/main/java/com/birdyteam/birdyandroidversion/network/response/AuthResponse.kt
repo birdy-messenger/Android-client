@@ -9,10 +9,10 @@ import com.google.gson.annotations.SerializedName
  */
 
 data class AuthResponse(
-    @SerializedName ("id")
+    @SerializedName("id")
     @Expose
-    val id : Int,
-    @SerializedName ("token")
+    val id: Int,
+    @SerializedName("token")
     @Expose
-    val token : Long
+    val token: Long
 )

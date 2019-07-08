@@ -8,8 +8,8 @@ import java.security.MessageDigest
  * @author Ilia Ilmenskii created on 08.07.2019
  */
 
-fun String.createMD5() : String {
-    val md : MessageDigest = MessageDigest.getInstance("MD5")
+fun String.createMD5(): String {
+    val md: MessageDigest = MessageDigest.getInstance("MD5")
     md.reset()
     md.update(this.toByteArray())
     val digest = md.digest()

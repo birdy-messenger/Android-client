@@ -8,7 +8,7 @@ import com.google.gson.annotations.SerializedName
  * @author Ilia Ilmenskii created on 08.07.2019
  */
 data class RegResponse(
-    @SerializedName ("result")
+    @SerializedName("result")
     @Expose
-    val result : String
+    val result: String
 )
