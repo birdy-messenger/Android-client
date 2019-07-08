@@ -13,7 +13,7 @@ import com.arellomobile.mvp.presenter.ProvidePresenter
 import com.birdyteam.birdyandroidversion.App
 import com.birdyteam.birdyandroidversion.R
 import com.birdyteam.birdyandroidversion.presentation.common.LoadingFragment
-import com.birdyteam.birdyandroidversion.presentation.auth.ui.presenter.LoginPresenter
+import com.birdyteam.birdyandroidversion.presentation.auth.signin.presenter.LoginPresenter
 import com.birdyteam.birdyandroidversion.user.CurrentUser
 import com.birdyteam.birdyandroidversion.presentation.auth.signin.view.LoginView
 
