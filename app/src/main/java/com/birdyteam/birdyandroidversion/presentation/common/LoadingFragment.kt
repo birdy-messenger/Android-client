@@ -1,4 +1,4 @@
-package com.birdyteam.birdyandroidversion.fragment
+package com.birdyteam.birdyandroidversion.presentation.common
 
 import android.os.Bundle
 import android.view.LayoutInflater

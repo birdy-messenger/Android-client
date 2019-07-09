@@ -1,6 +1,6 @@
 package com.birdyteam.birdyandroidversion.di.modules
 
-import com.birdyteam.birdyandroidversion.network.api.AppRequests
+import com.birdyteam.birdyandroidversion.data.network.api.app.AuthenticationApi
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import dagger.Module
@@ -36,6 +36,7 @@ object NetworkModule {
     @JvmStatic
     @Provides
     @Singleton
-    fun provideAppRequests(retrofit: Retrofit): AppRequests = retrofit.create(AppRequests::class.java)
+    fun provideAppRequests(retrofit: Retrofit): AuthenticationApi = retrofit.create(
+        AuthenticationApi::class.java)
 
 }

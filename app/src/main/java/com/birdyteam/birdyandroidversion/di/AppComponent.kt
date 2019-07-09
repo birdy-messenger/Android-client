@@ -1,9 +1,9 @@
 package com.birdyteam.birdyandroidversion.di
 
-import com.birdyteam.birdyandroidversion.activity.LoginActivity
+import com.birdyteam.birdyandroidversion.presentation.auth.signin.ui.LoginActivity
 import com.birdyteam.birdyandroidversion.di.modules.NetworkModule
-import com.birdyteam.birdyandroidversion.presenter.LoginPresenter
-import com.birdyteam.birdyandroidversion.presenter.RegisterPresenter
+import com.birdyteam.birdyandroidversion.presentation.auth.signin.presenter.LoginPresenter
+import com.birdyteam.birdyandroidversion.presentation.auth.signup.presenter.RegisterPresenter
 import dagger.Component
 import javax.inject.Singleton
 

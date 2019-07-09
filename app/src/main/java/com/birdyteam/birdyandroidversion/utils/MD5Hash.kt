@@ -1,4 +1,4 @@
-package com.birdyteam.birdyandroidversion.md5
+package com.birdyteam.birdyandroidversion.utils
 
 import java.math.BigInteger
 import java.security.MessageDigest

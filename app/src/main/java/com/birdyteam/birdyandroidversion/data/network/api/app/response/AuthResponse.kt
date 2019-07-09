@@ -1,4 +1,4 @@
-package com.birdyteam.birdyandroidversion.network.response
+package com.birdyteam.birdyandroidversion.data.network.api.app.response
 
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName

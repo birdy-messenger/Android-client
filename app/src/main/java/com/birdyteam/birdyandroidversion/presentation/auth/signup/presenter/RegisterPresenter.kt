@@ -1,10 +1,10 @@
-package com.birdyteam.birdyandroidversion.presenter
+package com.birdyteam.birdyandroidversion.presentation.auth.signup.presenter
 
 import com.arellomobile.mvp.InjectViewState
 import com.arellomobile.mvp.MvpPresenter
 import com.birdyteam.birdyandroidversion.App
-import com.birdyteam.birdyandroidversion.network.api.AppRequests
-import com.birdyteam.birdyandroidversion.view.RegisterView
+import com.birdyteam.birdyandroidversion.data.network.api.app.AuthenticationApi
+import com.birdyteam.birdyandroidversion.presentation.auth.signup.view.RegisterView
 import javax.inject.Inject
 
 /**
@@ -14,7 +14,7 @@ import javax.inject.Inject
 @InjectViewState
 class RegisterPresenter : MvpPresenter<RegisterView>() {
     @Inject
-    lateinit var appRequests: AppRequests
+    lateinit var authenticationApi: AuthenticationApi
 
     init {
         App.appComponent.inject(this@RegisterPresenter)

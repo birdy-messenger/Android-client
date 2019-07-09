@@ -1,4 +1,4 @@
-package com.birdyteam.birdyandroidversion.presenter
+package com.birdyteam.birdyandroidversion.presentation.auth.signin.presenter
 
 import android.content.SharedPreferences
 import android.util.Log
@@ -6,10 +6,10 @@ import androidx.core.content.edit
 import com.arellomobile.mvp.InjectViewState
 import com.arellomobile.mvp.MvpPresenter
 import com.birdyteam.birdyandroidversion.App
-import com.birdyteam.birdyandroidversion.md5.createMD5
-import com.birdyteam.birdyandroidversion.network.api.AppRequests
+import com.birdyteam.birdyandroidversion.utils.createMD5
+import com.birdyteam.birdyandroidversion.data.network.api.app.AuthenticationApi
 import com.birdyteam.birdyandroidversion.user.CurrentUser
-import com.birdyteam.birdyandroidversion.view.LoginView
+import com.birdyteam.birdyandroidversion.presentation.auth.signin.view.LoginView
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
@@ -32,7 +32,7 @@ class LoginPresenter(private val preferences: SharedPreferences) : MvpPresenter<
     }
 
     @Inject
-    lateinit var appRequests: AppRequests
+    lateinit var authenticationApi: AuthenticationApi
 
     private val tag = LoginPresenter::class.java.simpleName
     private var authRequest: Disposable? = null
@@ -64,7 +64,7 @@ class LoginPresenter(private val preferences: SharedPreferences) : MvpPresenter<
         Log.d(tag, "Checking correctness")
         if (checkCorrectness(email, password)) {
             viewState?.showLoad()
-            authRequest = appRequests.auth(email, password.createMD5())
+            authRequest = authenticationApi.auth(email, password.createMD5())
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({
