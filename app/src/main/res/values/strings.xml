@@ -12,4 +12,10 @@
     <string name="failed_to_sing_in">"Invalid password or email"</string>
     <string name="logout">Logout</string>
     <string name="undefined">Undefined</string>
+    <string-array name="validation_errors">
+        <item>Email doesn't match pattern!</item>
+        <item>Password is too short!</item>
+        <item>Password contains illegal symbols</item>
+        <item>Password is too long!</item>
+    </string-array>
 </resources>
