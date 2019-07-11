@@ -1,18 +1,22 @@
 package com.birdyteam.birdyandroidversion.presentation.auth.signin.presenter
 
 import android.content.SharedPreferences
+import android.content.res.Resources
 import android.util.Log
-import androidx.core.content.edit
 import com.arellomobile.mvp.InjectViewState
 import com.arellomobile.mvp.MvpPresenter
 import com.birdyteam.birdyandroidversion.App
-import com.birdyteam.birdyandroidversion.utils.createMD5
-import com.birdyteam.birdyandroidversion.data.network.api.app.AuthenticationApi
-import com.birdyteam.birdyandroidversion.user.CurrentUser
+import com.birdyteam.birdyandroidversion.R
+import com.birdyteam.birdyandroidversion.domain.input.LoginInput
+import com.birdyteam.birdyandroidversion.domain.interactor.SignInInteractor
+import com.birdyteam.birdyandroidversion.domain.repository.UserAuthInfoRepositoryImpl
+import com.birdyteam.birdyandroidversion.domain.validation.ValidateLoginInput
+import com.birdyteam.birdyandroidversion.domain.validation.ValidationError
+import com.birdyteam.birdyandroidversion.domain.validation.ValidationErrorState
+import com.birdyteam.birdyandroidversion.domain.validation.ValidationSuccess
 import com.birdyteam.birdyandroidversion.presentation.auth.signin.view.LoginView
-import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
-import io.reactivex.schedulers.Schedulers
+import retrofit2.HttpException
 import javax.inject.Inject
 
 /**
@@ -20,23 +24,18 @@ import javax.inject.Inject
  * @author Ilia Ilmenskii created on 07.07.2019
  */
 @InjectViewState
-class LoginPresenter(private val preferences: SharedPreferences) : MvpPresenter<LoginView>() {
-
-    companion object {
-        private var TOO_LONG_PASSWORD = "Password is too long!"
-        private var TOO_SHORT_PASSWORD = "Password is too short!"
-        private var EMAIL_NOT_MATCH = "Email doesn't match pattern!"
-        private var PASSWORD_NOT_MATCH = "Password contains illegal symbols"
-        private const val EMAIL_PATTERN = "[\\w-]+@[\\w]+\\.[\\w]+"
-        private const val PASSWORD_PATTERN = "[\\w]+"
-    }
-
-    @Inject
-    lateinit var authenticationApi: AuthenticationApi
+class LoginPresenter @Inject constructor(
+    resources: Resources,
+    private val preferences: SharedPreferences,
+    private val validateLoginInput: ValidateLoginInput,
+    private val signInInteractor: SignInInteractor
+) : MvpPresenter<LoginView>() {
 
     private val tag = LoginPresenter::class.java.simpleName
     private var authRequest: Disposable? = null
+    private val errors = resources.getStringArray(R.array.validation_errors)
 
+    //Load preferences(!!!)
     init {
         App.appComponent.inject(this@LoginPresenter)
         if (hasSharedPreferences()) {
@@ -48,74 +47,46 @@ class LoginPresenter(private val preferences: SharedPreferences) : MvpPresenter<
     }
 
     private fun hasSharedPreferences(): Boolean {
-        val id = preferences.getInt(CurrentUser.SAVE_ID, -1)
-        val token = preferences.getLong(CurrentUser.SAVE_TOKEN, -1L)
-        if (id == -1 || token == -1L)
-            return false
-        CurrentUser.id = id
-        CurrentUser.token = token
-        return true
+        val id = preferences.getInt(UserAuthInfoRepositoryImpl.SAVE_ID, -1)
+        val token = preferences.getLong(UserAuthInfoRepositoryImpl.SAVE_TOKEN, -1L)
+        return !(id == -1 || token == -1L)
     }
 
     fun signInClicked(email: String, password: String) {
-        Log.d(tag, "Sign in Clicked with email : $email and password : $password")
         if (authRequest?.isDisposed == false)
             return
-        Log.d(tag, "Checking correctness")
-        if (checkCorrectness(email, password)) {
-            viewState?.showLoad()
-            authRequest = authenticationApi.auth(email, password.createMD5())
-                .subscribeOn(Schedulers.newThread())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({
-                    CurrentUser.id = it.id
-                    CurrentUser.token = it.token
-                    savePreferences()
-                    Log.d(tag, "Received id : ${it.id} and token : ${it.token}")
-                    viewState.hideLoad()
-                    viewState.signIn()
-                }, {
-                    Log.d(tag, "Error occurred : $it")
-                    viewState.hideLoad()
-                })
+        when (val result = validateLoginInput.validate(LoginInput(email, password))) {
+            is ValidationError -> showValidationError(result)
+            is ValidationSuccess -> {
+                viewState.showLoad()
+                signInInteractor.signIn(LoginInput(email, password))
+                    .subscribe({
+                        viewState.hideLoad()
+                        viewState.signIn()
+                    }, {
+                        viewState.hideLoad()
+                        val message = (it as HttpException).response()
+                        Log.e(tag, message.toString())
+                    })
+            }
         }
     }
 
-    private fun savePreferences() = preferences.edit {
-        clear()
-        this.putInt(CurrentUser.SAVE_ID, CurrentUser.id)
-        this.putLong(CurrentUser.SAVE_TOKEN, CurrentUser.token)
-        apply()
+    private fun showValidationError(result: ValidationError) = result.apply {
+        var message = ""
+        if (emailErrorMessage != null)
+            message = errors[0]
+        Thread.sleep(500)
+        message += when (passwordErrorMessage?.errorMessage) {
+            ValidationErrorState.TOO_SHORT -> " ${errors[1]}"
+            ValidationErrorState.TOO_LONG -> " ${errors[3]}"
+            ValidationErrorState.NOT_MATCH_PATTERN -> " ${errors[2]}"
+            else -> ""
+        }
+        viewState.showError(message)
     }
 
     fun signUpClicked() {
 
-    }
-
-    fun checkCorrectness(email: String, password: String): Boolean =
-        (checkEmail(email) && checkPassword(password))
-
-    private fun checkEmail(email: String): Boolean {
-        if (!email.matches(Regex(EMAIL_PATTERN))) {
-            viewState.showError(EMAIL_NOT_MATCH)
-            return false
-        }
-        return true
-    }
-
-    private fun checkPassword(password: String): Boolean {
-        if (password.length < 6) {
-            viewState.showError(TOO_SHORT_PASSWORD)
-            return false
-        }
-        if (password.length > 32) {
-            viewState.showError(TOO_LONG_PASSWORD)
-            return false
-        }
-        if (!password.matches(Regex(PASSWORD_PATTERN))) {
-            viewState.showError(PASSWORD_NOT_MATCH)
-            return false
-        }
-        return true
     }
 }

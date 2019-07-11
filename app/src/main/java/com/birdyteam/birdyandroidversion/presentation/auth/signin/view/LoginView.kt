@@ -1,7 +1,9 @@
 package com.birdyteam.birdyandroidversion.presentation.auth.signin.view
 
 import com.arellomobile.mvp.MvpView
-import com.arellomobile.mvp.viewstate.strategy.*
+import com.arellomobile.mvp.viewstate.strategy.AddToEndSingleTagStrategy
+import com.arellomobile.mvp.viewstate.strategy.OneExecutionStateStrategy
+import com.arellomobile.mvp.viewstate.strategy.StateStrategyType
 
 /**
  * @project Android-client

@@ -2,7 +2,7 @@ package com.birdyteam.birdyandroidversion.domain.repository
 
 import android.content.SharedPreferences
 import androidx.core.content.edit
-import com.birdyteam.birdyandroidversion.data.network.api.app.input.Info
+import com.birdyteam.birdyandroidversion.data.network.api.app.response.AuthResponse
 import com.birdyteam.birdyandroidversion.data.repository.UserAuthInfoRepository
 import io.reactivex.Completable
 
@@ -18,7 +18,7 @@ class UserAuthInfoRepositoryImpl(private val sharedPreferences: SharedPreference
         const val SAVE_TOKEN = "save.token"
     }
 
-    override fun saveInfo(info: Info): Completable = Completable.fromAction {
+    override fun saveInfo(info: AuthResponse): Completable = Completable.fromAction {
         sharedPreferences.edit {
             clear()
             putInt(SAVE_ID, info.id)

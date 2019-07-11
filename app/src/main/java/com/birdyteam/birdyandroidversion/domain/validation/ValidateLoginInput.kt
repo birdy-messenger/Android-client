@@ -1,34 +1,33 @@
 package com.birdyteam.birdyandroidversion.domain.validation
 
-import android.content.res.Resources
-import com.birdyteam.birdyandroidversion.R
-import com.birdyteam.birdyandroidversion.data.network.api.app.input.LoginInput
+import com.birdyteam.birdyandroidversion.domain.input.LoginInput
 
 /**
  * @project Android-client
  * @author Ilia Ilmenskii created on 09.07.2019
  */
-class ValidateLoginInput(
-    resources: Resources
-) {
-    private val errors = resources.getStringArray(R.array.validation_errors)
+class ValidateLoginInput {
 
     fun validate(input: LoginInput): ValidationResult {
+        var passwordError : ValidationErrorMessage? = null
+        var emailError : ValidationErrorMessage? = null
         if (!input.email.matches(Regex(InputPatterns.EMAIL_PATTERN)))
-            return ValidationError(errors[0])
+            emailError = ValidationErrorMessage(ValidationErrorState.NOT_MATCH_PATTERN)
         if (!input.password.matches(Regex(InputPatterns.PASSWORD_PATTERN))) {
-            return when (input.password.length) {
+            passwordError = when (input.password.length) {
                 in 0..5 -> {
-                    ValidationError(errors[1])
+                    ValidationErrorMessage(ValidationErrorState.TOO_SHORT)
                 }
                 in 6..32 -> {
-                    ValidationError(errors[2])
+                    ValidationErrorMessage(ValidationErrorState.NOT_MATCH_PATTERN)
                 }
                 else -> {
-                    ValidationError(errors[3])
+                    ValidationErrorMessage(ValidationErrorState.TOO_LONG)
                 }
             }
         }
-        return ValidationSuccess
+        if(passwordError == null && emailError == null)
+            return ValidationSuccess
+        return ValidationError(emailError, passwordError)
     }
 }

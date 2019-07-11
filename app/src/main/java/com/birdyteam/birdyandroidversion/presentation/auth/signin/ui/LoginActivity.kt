@@ -12,10 +12,9 @@ import com.arellomobile.mvp.presenter.InjectPresenter
 import com.arellomobile.mvp.presenter.ProvidePresenter
 import com.birdyteam.birdyandroidversion.App
 import com.birdyteam.birdyandroidversion.R
-import com.birdyteam.birdyandroidversion.presentation.common.LoadingFragment
 import com.birdyteam.birdyandroidversion.presentation.auth.signin.presenter.LoginPresenter
-import com.birdyteam.birdyandroidversion.user.CurrentUser
 import com.birdyteam.birdyandroidversion.presentation.auth.signin.view.LoginView
+import com.birdyteam.birdyandroidversion.presentation.common.LoadingFragment
 
 /**
  * @project Android-client
@@ -42,20 +41,16 @@ class LoginActivity : MvpAppCompatActivity(),
     lateinit var loginPresenter: LoginPresenter
 
     @ProvidePresenter
-    fun providePresenter(): LoginPresenter = LoginPresenter(
-        getSharedPreferences(
-            CurrentUser.USER, Context.MODE_PRIVATE
-        )
-    )
+    fun providePresenter() : LoginPresenter = App.appComponent
+        .presenter()
+        .loginPresenter()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
         App.appComponent.inject(this@LoginActivity)
         supportActionBar?.hide()
-
         initWidgets()
-
     }
 
     private fun initWidgets() {
@@ -67,7 +62,6 @@ class LoginActivity : MvpAppCompatActivity(),
                 password.text.toString()
             )
         }
-
         registerBtn = findViewById(R.id.register_btn)
         registerBtn.setOnClickListener {
             loginPresenter.signUpClicked()
@@ -89,7 +83,8 @@ class LoginActivity : MvpAppCompatActivity(),
     }
 
     override fun showLoad() {
-        dialogFragment.show(supportFragmentManager,
+        dialogFragment.show(
+            supportFragmentManager,
             DIALOG_TAG
         )
     }

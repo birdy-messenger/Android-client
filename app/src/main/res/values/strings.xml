@@ -13,7 +13,7 @@
     <string name="logout">Logout</string>
     <string name="undefined">Undefined</string>
     <string-array name="validation_errors">
-        <item>Email doesn't match pattern!</item>
+        <item>Email doesn\'t match pattern!</item>
         <item>Password is too short!</item>
         <item>Password contains illegal symbols</item>
         <item>Password is too long!</item>
