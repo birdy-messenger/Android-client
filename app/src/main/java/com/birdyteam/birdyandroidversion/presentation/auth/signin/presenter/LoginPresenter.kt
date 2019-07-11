@@ -17,6 +17,7 @@ import com.birdyteam.birdyandroidversion.domain.validation.ValidationSuccess
 import com.birdyteam.birdyandroidversion.presentation.auth.signin.view.LoginView
 import io.reactivex.disposables.Disposable
 import retrofit2.HttpException
+import java.lang.StringBuilder
 import javax.inject.Inject
 
 /**
@@ -73,17 +74,17 @@ class LoginPresenter @Inject constructor(
     }
 
     private fun showValidationError(result: ValidationError) = result.apply {
-        var message = ""
+        val message = StringBuilder()
         if (emailErrorMessage != null)
-            message = errors[0]
+            message.append(errors[0])
         Thread.sleep(500)
-        message += when (passwordErrorMessage?.errorMessage) {
+        message.append(when (passwordErrorMessage?.errorMessage) {
             ValidationErrorState.TOO_SHORT -> " ${errors[1]}"
             ValidationErrorState.TOO_LONG -> " ${errors[3]}"
             ValidationErrorState.NOT_MATCH_PATTERN -> " ${errors[2]}"
             else -> ""
-        }
-        viewState.showError(message)
+        })
+        viewState.showError(message.toString())
     }
 
     fun signUpClicked() {
