@@ -40,6 +40,7 @@ class LoginPresenter @Inject constructor(
         checkAuth = checkAuthorizedInteractor.checkSignIn()
             .subscribe({
                 viewState.signIn()
+                Log.d(tag, "${it.id} ${it.token}")
             }, {
                 Log.d(tag, "$it")
             })
@@ -87,6 +88,6 @@ class LoginPresenter @Inject constructor(
     }
 
     fun signUpClicked() {
-
+        viewState.signUp()
     }
 }

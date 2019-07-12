@@ -14,6 +14,7 @@ import com.birdyteam.birdyandroidversion.App
 import com.birdyteam.birdyandroidversion.R
 import com.birdyteam.birdyandroidversion.presentation.auth.signin.presenter.LoginPresenter
 import com.birdyteam.birdyandroidversion.presentation.auth.signin.view.LoginView
+import com.birdyteam.birdyandroidversion.presentation.auth.signup.ui.RegisterActivity
 import com.birdyteam.birdyandroidversion.presentation.common.LoadingFragment
 
 /**
@@ -94,6 +95,8 @@ class LoginActivity : MvpAppCompatActivity(),
     }
 
     override fun signUp() {
-
+        startActivity(
+            RegisterActivity.getInstance(this)
+        )
     }
 }
