@@ -27,7 +27,6 @@ class LoginActivity : MvpAppCompatActivity(),
     companion object {
         private const val DIALOG_TAG = "loading.fragment.tag"
 
-        @Suppress("unused")
         fun getInstance(packageContext: Context) = Intent(packageContext, LoginActivity::class.java)
     }
 
@@ -56,6 +55,7 @@ class LoginActivity : MvpAppCompatActivity(),
 
     private fun initWidgets() {
         dialogFragment = LoadingFragment()
+        dialogFragment.isCancelable = false
         loginBtn = findViewById(R.id.login_btn)
         loginBtn.setOnClickListener {
             loginPresenter.signInClicked(
