@@ -9,7 +9,7 @@ import io.reactivex.schedulers.Schedulers
  * @project Android-client
  * @author Ilia Ilmenskii created on 12.07.2019
  */
-class CheckAuthorizedInteractor(
+class ReadAuthInfoInteractor(
     private val userAuthInfoRepository: UserAuthInfoRepository
 ) {
     fun checkSignIn(): Single<AuthResponse> = userAuthInfoRepository
