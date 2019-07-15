@@ -32,12 +32,11 @@ class UserAuthInfoRepositoryImpl(context: Context) : UserAuthInfoRepository {
         }
     }
 
-    override fun getAuthInfo(): Single<AuthResponse> = Single.create { subscribe ->
+    override fun getAuthInfo(): Single<AuthResponse> = Single.fromCallable {
         val id = sharedPreferences.getInt(SAVE_ID, -1)
         val token = sharedPreferences.getLong(SAVE_TOKEN, -1L)
-        if(id == -1 || token == -1L)
-            subscribe.onError(IllegalStateException("Output is invalid"))
-        else
-            subscribe.onSuccess(AuthResponse(id, token))
+        if (id == -1 || token == -1L)
+            throw IllegalStateException("Missing saved auth info")
+        AuthResponse(id, token)
     }
 }
