@@ -6,31 +6,29 @@ package com.birdyteam.birdyandroidversion.domain.validation
  */
 sealed class ValidationResult
 
-open class ValidationError(
-    val emailErrorMessage: ValidationErrorMessage?,
-    val passwordErrorMessage: ValidationErrorMessage?
-) : ValidationResult()
-
-class ExtendedValidationError (
-    emailErrorMessage: ValidationErrorMessage? = null,
-    passwordErrorMessage: ValidationErrorMessage? = null
-) : ValidationError(emailErrorMessage, passwordErrorMessage) {
-
-    var firstNameErrorMessage: ValidationErrorMessage? = null
-    var confirmPasswordErrorMessage: ValidationErrorMessage? = null
-
-    constructor(errors: Array<ValidationErrorMessage?>) : this(errors[0], errors[2]) {
-        firstNameErrorMessage = errors[1]
-        confirmPasswordErrorMessage = errors[3]
-    }
-}
-
-data class ValidationErrorMessage(val errorMessage: ValidationErrorState)
 object ValidationSuccess : ValidationResult()
 
-enum class ValidationErrorState {
+sealed class ValidationError : ValidationResult()
+
+interface DefaultErrors {
+    var emailError: Errors?
+    var passwordError: Errors?
+}
+
+enum class Errors {
     TOO_SHORT,
     TOO_LONG,
-    NOT_MATCH_PATTERN,
-    NOT_MATCH_CONFIRM
+    NOT_MATCH_PATTERN
+}
+
+class LoginValidationError : ValidationError(), DefaultErrors {
+    override var emailError: Errors? = null
+    override var passwordError: Errors? = null
+}
+
+class RegistrationError : ValidationError(), DefaultErrors {
+    override var emailError: Errors? = null
+    override var passwordError: Errors? = null
+    var userTagError: Errors? = null
+    var passwordConfirmed: Boolean = true
 }
