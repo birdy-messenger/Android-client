@@ -1,8 +1,10 @@
 package com.birdyteam.birdyandroidversion.data.network.api.app
 
+import com.birdyteam.birdyandroidversion.data.network.api.app.body.RegistrationBody
 import com.birdyteam.birdyandroidversion.data.network.api.app.response.AuthResponse
-import com.birdyteam.birdyandroidversion.data.network.api.app.response.RegResponse
+import io.reactivex.Completable
 import io.reactivex.Single
+import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST
 import retrofit2.http.Query
@@ -13,16 +15,14 @@ import retrofit2.http.Query
  */
 
 interface AuthenticationApi {
-    @GET("/api/app/auth")
+    @GET("/app/auth")
     fun auth(
         @Query("email") email: String,
         @Query("passwordHash") password: String
     ): Single<AuthResponse>
 
-    @POST("/api/app/reg")
+    @POST("/app/reg")
     fun reg(
-        @Query("email") email: String,
-        @Query("passwordHash") password: String,
-        @Query("firstName") name: String
-    ): Single<RegResponse>
+        @Body registrationBody: RegistrationBody
+    ): Completable
 }
