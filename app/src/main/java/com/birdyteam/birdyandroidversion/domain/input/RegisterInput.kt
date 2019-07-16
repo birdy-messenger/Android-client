@@ -6,7 +6,7 @@ package com.birdyteam.birdyandroidversion.domain.input
  */
 
 data class RegisterInput(
-    val firstName: String,
+    val userTag: String,
     val email: String,
     val password: String,
     val confirmedPassword: String
