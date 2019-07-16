@@ -4,7 +4,7 @@ import android.content.Context
 import android.content.SharedPreferences
 import com.birdyteam.birdyandroidversion.data.network.api.app.AuthenticationApi
 import com.birdyteam.birdyandroidversion.data.repository.UserAuthInfoRepository
-import com.birdyteam.birdyandroidversion.domain.interactor.CheckAuthorizedInteractor
+import com.birdyteam.birdyandroidversion.domain.interactor.ReadAuthInfoInteractor
 import com.birdyteam.birdyandroidversion.domain.interactor.SignInInteractor
 import com.birdyteam.birdyandroidversion.domain.repository.UserAuthInfoRepositoryImpl
 import com.birdyteam.birdyandroidversion.domain.validation.ValidateLoginInput
@@ -41,8 +41,8 @@ object LoginModule {
     @Provides
     fun provideCheckAuthorizedInteractor(
         userAuthInfoRepository: UserAuthInfoRepository
-    ): CheckAuthorizedInteractor {
-        return CheckAuthorizedInteractor(userAuthInfoRepository)
+    ): ReadAuthInfoInteractor {
+        return ReadAuthInfoInteractor(userAuthInfoRepository)
     }
 
     @JvmStatic
