@@ -20,5 +20,5 @@ class SignInInteractor(
         .auth(input.email, input.password.createMD5())
         .subscribeOn(Schedulers.io())
         .map { AuthResponse(it.id, it.token) }
-        .flatMapCompletable { userAuthInfoRepository.saveInfo(it) }
+        .flatMapCompletable { userAuthInfoRepository.saveAuthInfo(it) }
 }

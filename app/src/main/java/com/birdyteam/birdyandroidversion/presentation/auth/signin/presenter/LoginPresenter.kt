@@ -1,6 +1,5 @@
 package com.birdyteam.birdyandroidversion.presentation.auth.signin.presenter
 
-import android.content.SharedPreferences
 import android.content.res.Resources
 import android.util.Log
 import com.arellomobile.mvp.InjectViewState
@@ -8,16 +7,12 @@ import com.arellomobile.mvp.MvpPresenter
 import com.birdyteam.birdyandroidversion.App
 import com.birdyteam.birdyandroidversion.R
 import com.birdyteam.birdyandroidversion.domain.input.LoginInput
+import com.birdyteam.birdyandroidversion.domain.interactor.ReadAuthInfoInteractor
 import com.birdyteam.birdyandroidversion.domain.interactor.SignInInteractor
-import com.birdyteam.birdyandroidversion.domain.repository.UserAuthInfoRepositoryImpl
-import com.birdyteam.birdyandroidversion.domain.validation.ValidateLoginInput
-import com.birdyteam.birdyandroidversion.domain.validation.ValidationError
-import com.birdyteam.birdyandroidversion.domain.validation.ValidationErrorState
-import com.birdyteam.birdyandroidversion.domain.validation.ValidationSuccess
+import com.birdyteam.birdyandroidversion.domain.validation.*
 import com.birdyteam.birdyandroidversion.presentation.auth.signin.view.LoginView
-import io.reactivex.disposables.Disposable
+import io.reactivex.disposables.CompositeDisposable
 import retrofit2.HttpException
-import java.lang.StringBuilder
 import javax.inject.Inject
 
 /**
@@ -27,67 +22,69 @@ import javax.inject.Inject
 @InjectViewState
 class LoginPresenter @Inject constructor(
     resources: Resources,
-    private val preferences: SharedPreferences,
     private val validateLoginInput: ValidateLoginInput,
-    private val signInInteractor: SignInInteractor
+    private val signInInteractor: SignInInteractor,
+    readAuthInfoInteractor: ReadAuthInfoInteractor
 ) : MvpPresenter<LoginView>() {
 
     private val tag = LoginPresenter::class.java.simpleName
-    private var authRequest: Disposable? = null
+    private val disposablesContainer = CompositeDisposable()
     private val errors = resources.getStringArray(R.array.validation_errors)
 
-    //Load preferences(!!!)
     init {
         App.appComponent.inject(this@LoginPresenter)
-        if (hasSharedPreferences()) {
-            Log.d(tag, "Has shared preferences!")
-            viewState.signIn()
-        } else {
-            Log.d(tag, "Doesn't have preferences")
-        }
+        disposablesContainer.add(
+            readAuthInfoInteractor.checkSignIn()
+                .subscribe({
+                    viewState.signIn()
+                    Log.d(tag, "${it.id} ${it.token}")
+                }, {
+                    Log.d(tag, "$it")
+                })
+        )
     }
 
-    private fun hasSharedPreferences(): Boolean {
-        val id = preferences.getInt(UserAuthInfoRepositoryImpl.SAVE_ID, -1)
-        val token = preferences.getLong(UserAuthInfoRepositoryImpl.SAVE_TOKEN, -1L)
-        return !(id == -1 || token == -1L)
+    override fun onDestroy() {
+        super.onDestroy()
+        disposablesContainer.dispose()
     }
 
     fun signInClicked(email: String, password: String) {
-        if (authRequest?.isDisposed == false)
-            return
         when (val result = validateLoginInput.validate(LoginInput(email, password))) {
-            is ValidationError -> showValidationError(result)
+            is LoginValidationError -> showValidationError(result)
             is ValidationSuccess -> {
                 viewState.showLoad()
-                signInInteractor.signIn(LoginInput(email, password))
-                    .subscribe({
-                        viewState.hideLoad()
-                        viewState.signIn()
-                    }, {
-                        viewState.hideLoad()
-                        val message = (it as HttpException).response()
-                        Log.e(tag, message.toString())
-                    })
+                disposablesContainer.add(
+                    signInInteractor.signIn(LoginInput(email, password))
+                        .subscribe({
+                            viewState.hideLoad()
+                            viewState.signIn()
+                        }, {
+                            viewState.hideLoad()
+                            val message = (it as HttpException).response()
+                            Log.e(tag, message.toString())
+                        })
+                )
             }
         }
     }
 
-    private fun showValidationError(result: ValidationError) = result.apply {
+    private fun showValidationError(result: LoginValidationError) = result.apply {
         val message = StringBuilder()
-        if (emailErrorMessage != null)
+        if (emailError != null)
             message.append(errors[0])
-        Thread.sleep(500)
-        message.append(when (passwordErrorMessage?.errorMessage) {
-            ValidationErrorState.TOO_SHORT -> " ${errors[1]}"
-            ValidationErrorState.TOO_LONG -> " ${errors[3]}"
-            ValidationErrorState.NOT_MATCH_PATTERN -> " ${errors[2]}"
-            else -> ""
-        })
+        if (passwordError != null)
+            message.append(
+                when (passwordError as Errors) {
+                    Errors.TOO_SHORT -> " ${errors[1]}"
+                    Errors.TOO_LONG -> " ${errors[3]}"
+                    Errors.NOT_MATCH_PATTERN -> " ${errors[2]}"
+                }
+            )
         viewState.showError(message.toString())
     }
 
     fun signUpClicked() {
-
+        viewState.signUp()
     }
 }

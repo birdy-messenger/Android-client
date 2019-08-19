@@ -14,6 +14,7 @@ import com.birdyteam.birdyandroidversion.App
 import com.birdyteam.birdyandroidversion.R
 import com.birdyteam.birdyandroidversion.presentation.auth.signin.presenter.LoginPresenter
 import com.birdyteam.birdyandroidversion.presentation.auth.signin.view.LoginView
+import com.birdyteam.birdyandroidversion.presentation.auth.signup.ui.RegisterActivity
 import com.birdyteam.birdyandroidversion.presentation.common.LoadingFragment
 
 /**
@@ -26,7 +27,6 @@ class LoginActivity : MvpAppCompatActivity(),
     companion object {
         private const val DIALOG_TAG = "loading.fragment.tag"
 
-        @Suppress("unused")
         fun getInstance(packageContext: Context) = Intent(packageContext, LoginActivity::class.java)
     }
 
@@ -55,6 +55,7 @@ class LoginActivity : MvpAppCompatActivity(),
 
     private fun initWidgets() {
         dialogFragment = LoadingFragment()
+        dialogFragment.isCancelable = false
         loginBtn = findViewById(R.id.login_btn)
         loginBtn.setOnClickListener {
             loginPresenter.signInClicked(
@@ -94,6 +95,8 @@ class LoginActivity : MvpAppCompatActivity(),
     }
 
     override fun signUp() {
-
+        startActivity(
+            RegisterActivity.getInstance(this)
+        )
     }
 }
